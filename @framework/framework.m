@@ -51,12 +51,12 @@ classdef framework < handle
         parent = this.hMainGui;
       end
       
-      if ~exist('callbacks','dir') == 7
+      if ~(exist('+callbacks','dir') == 7)
         mkdir('+callbacks')
       end
       
       
-      if ~exist(['+callbacks/button_', name, '.m'],'file') == 2
+      if ~(exist(['+callbacks/button_', name, '.m'],'file') == 2)
         fcallback = fopen(['+callbacks/button_', name, '.m'],'w');
         fprintf(fcallback, '%s\n', ['function button_', name, '(this)']);
         fprintf(fcallback, '%s\n', ['  msgbox(''button_', name, ''',''Callback Test'',''help'');']);
