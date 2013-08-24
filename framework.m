@@ -1,9 +1,10 @@
 classdef framework < handle
    
   properties
-    hMainGui; 
+    
+    hMainGui;
     packageName;
-    hButton;
+
   end
   
   
@@ -26,47 +27,74 @@ classdef framework < handle
       % parse config file      
       this.parseConfig(config);
       
-      % save gui handle
-      setappdata(0, 'hMainGui', this.hMainGui);
-      
       % show gui
       this.showGui();
                                                    
+    end
+    
+    function handle = getHandle(this, name)
+      handle = getappdata(this.hMainGui, name);
     end
     
   end
   
   methods(Access = private)
     
-    function mainWindow(this, name, size)
+    function mainWindow(this, name, size, string)
       
       this.hMainGui = figure('tag',name,...
-                       'Visible','off',...
-                       'Name', name,...
-                       'MenuBar','none',...
-                       'Resize','off',...
-                       'Units','pixel',...
-                       'Position',[50, 50, size]);
-                     
+                             'NumberTitle','off', ...
+                             'Visible','off',...
+                             'Name', string,...
+                             'MenuBar','none',...
+                             'Resize','off',...
+                             'Units','pixel',...
+                             'position',[50, 50, size]);
+            
+      setappdata(this.hMainGui, name, this.hMainGui);                   
+                           
       movegui(this.hMainGui,'center'); 
       
     end
     
     function button(this, name, size, position, string, parent)
       
-      % check input parameters
       if nargin < 6
         parent = this.hMainGui;
+      else
+        parent = getappdata(this.hMainGui,parent);
       end
       
       hFunction = this.createCallback('button', name, this.packageName);
       
       % create button
-      uicontrol('Style', 'pushbutton',...
-                'String', string,...
-                'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size],...
-                'Callback', @(src,event)hFunction(this), ...
-                'Parent', parent);
+      handle = uicontrol('Style', 'pushbutton',...
+                         'String', string, ...
+                         'Units', 'pixel', ...
+                         'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
+                         'Callback', @(src,event)hFunction(this), ...
+                         'Parent', parent);
+                       
+      setappdata(this.hMainGui, name, handle);
+      
+    end
+    
+    function axes(this, name, size, position, parent)
+     
+      if nargin < 5
+        parent = this.hMainGui;
+      else
+        parent = getappdata(this.hMainGui,parent);
+      end
+      
+      % create button
+      handle = axes('Units', 'pixel', ...
+                    'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size],...
+                    'Parent', parent);
+                  
+      imshow(1);
+         
+      setappdata(this.hMainGui, name, handle);
       
     end
     
@@ -101,7 +129,6 @@ classdef framework < handle
       
 
     end
-    
     
     
     function showGui(this)
