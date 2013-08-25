@@ -12,6 +12,9 @@ classdef framework < handle
 
     function this = framework(config, packageName)
       
+      % surpress uitabgroup warning
+      s = warning('off', 'MATLAB:uitabgroup:OldVersion');
+      
       % check input parameter
       if nargin < 1
         config = 'example.cfg';
@@ -29,6 +32,9 @@ classdef framework < handle
       
       % show gui
       this.showGui();
+      
+      % restore warning settings
+      %warning(s);
                                                    
     end
     
@@ -40,9 +46,9 @@ classdef framework < handle
   
   methods(Access = private)
     
-    function mainWindow(this, name, size, string)
+    function window(this, name, size, string)
       
-      this.hMainGui = figure('tag',name,...
+      handle = figure('tag',name,...
                              'NumberTitle','off', ...
                              'Visible','off',...
                              'Name', string,...
@@ -51,7 +57,11 @@ classdef framework < handle
                              'Units','pixel',...
                              'position',[50, 50, size]);
             
-      setappdata(this.hMainGui, name, this.hMainGui);                   
+      if isempty(this.hMainGui)
+        this.hMainGui = handle;
+      end
+                           
+      setappdata(this.hMainGui, name, handle);                   
                            
       movegui(this.hMainGui,'center'); 
       
@@ -94,6 +104,29 @@ classdef framework < handle
                   
       imshow(1);
          
+      setappdata(this.hMainGui, name, handle);
+      
+    end
+    
+    function tab(this, name, string, parent)
+      
+      tabGroupName = [parent 'TabGroup'];
+      
+      if nargin < 4
+        parent = this.hMainGui;
+      else
+        parent = getappdata(this.hMainGui,parent);
+      end
+      
+      hTabGroup = getappdata(this.hMainGui, tabGroupName);
+      
+      if isempty(hTabGroup)
+        hTabGroup = uitabgroup('Parent',parent);
+        setappdata(this.hMainGui, tabGroupName, hTabGroup);
+      end
+      
+      handle = uitab('Parent',hTabGroup, 'title',string ,'Units','pixel');
+      
       setappdata(this.hMainGui, name, handle);
       
     end
