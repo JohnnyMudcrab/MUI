@@ -42,52 +42,25 @@ classdef framework < handle
       handle = getappdata(this.hMainGui, name);
     end
     
+    function text = getText(this, name, format)
+      
+      if nargin < 3
+        format = 'string';
+      end
+      
+      handle = this.getHandle(name);
+      
+      if strcmp(format,'numeric')
+        text = str2double(get(handle,'String'));
+      else
+        text = get(handle,'String');
+      end
+ 
+    end
+    
   end
   
   methods(Access = private)
-    
-    function window(this, name, size, string)
-      
-      handle = figure('tag',name,...
-                             'NumberTitle','off', ...
-                             'Visible','off',...
-                             'Name', string,...
-                             'MenuBar','none',...
-                             'Resize','off',...
-                             'Units','pixel',...
-                             'position',[50, 50, size]);
-            
-      if isempty(this.hMainGui)
-        this.hMainGui = handle;
-      end
-                           
-      setappdata(this.hMainGui, name, handle);                   
-                           
-      movegui(this.hMainGui,'center'); 
-      
-    end
-    
-    function button(this, name, size, position, string, parent)
-      
-      if nargin < 6
-        parent = this.hMainGui;
-      else
-        parent = getappdata(this.hMainGui,parent);
-      end
-      
-      hFunction = this.createCallback('button', name, this.packageName);
-      
-      % create button
-      handle = uicontrol('Style', 'pushbutton',...
-                         'String', string, ...
-                         'Units', 'pixel', ...
-                         'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
-                         'Callback', @(src,event)hFunction(this), ...
-                         'Parent', parent);
-                       
-      setappdata(this.hMainGui, name, handle);
-      
-    end
     
     function axes(this, name, size, position, parent)
      
@@ -108,25 +81,25 @@ classdef framework < handle
       
     end
     
-    function tab(this, name, string, parent)
+    function button(this, name, size, position, string, parent)
       
-      tabGroupName = [parent 'TabGroup'];
-      
-      if nargin < 4
+      % check input arguments
+      if nargin < 6
         parent = this.hMainGui;
       else
         parent = getappdata(this.hMainGui,parent);
       end
       
-      hTabGroup = getappdata(this.hMainGui, tabGroupName);
+      hFunction = this.createCallback('button', name, this.packageName);
       
-      if isempty(hTabGroup)
-        hTabGroup = uitabgroup('Parent',parent);
-        setappdata(this.hMainGui, tabGroupName, hTabGroup);
-      end
-      
-      handle = uitab('Parent',hTabGroup, 'title',string ,'Units','pixel');
-      
+      % create button
+      handle = uicontrol('Style', 'pushbutton',...
+                         'String', string, ...
+                         'Units', 'pixel', ...
+                         'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
+                         'Callback', @(src,event)hFunction(this), ...
+                         'Parent', parent);
+                       
       setappdata(this.hMainGui, name, handle);
       
     end
@@ -163,18 +136,82 @@ classdef framework < handle
 
     end
     
+    function tab(this, name, string, parent)
+      
+      tabGroupName = [parent 'TabGroup'];
+      
+      if nargin < 4
+        parent = this.hMainGui;
+      else
+        parent = getappdata(this.hMainGui,parent);
+      end
+      
+      hTabGroup = getappdata(this.hMainGui, tabGroupName);
+      
+      if isempty(hTabGroup)
+        hTabGroup = uitabgroup('Parent',parent);
+        setappdata(this.hMainGui, tabGroupName, hTabGroup);
+      end
+      
+      handle = uitab('Parent',hTabGroup, 'title',string ,'Units','pixel');
+      
+      setappdata(this.hMainGui, name, handle);
+      
+    end
+    
+    function text(this, name, string, size, position, style, parent)
+      
+      % check input arguments
+      if nargin < 6
+        parent = this.hMainGui;
+      else
+        parent = getappdata(this.hMainGui,parent);
+      end
+      
+      if strcmp(style, 'static')
+        style = 'text';
+      end
+
+      handle = uicontrol('Style', style,...
+                         'String', string, ...
+                         'Units', 'pixel', ...
+                         'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
+                         'Parent', parent);
+      
+      setappdata(this.hMainGui, name, handle);
+                       
+    end
     
     function showGui(this)
       set(this.hMainGui,'Visible','on');
     end
     
-    guiInit(this)
+    function window(this, name, size, string)
+      
+      handle = figure('tag',name,...
+                             'NumberTitle','off', ...
+                             'Visible','off',...
+                             'Name', string,...
+                             'MenuBar','none',...
+                             'Resize','off',...
+                             'Units','pixel',...
+                             'position',[50, 50, size]);
+            
+      if isempty(this.hMainGui)
+        this.hMainGui = handle;
+      end
+                           
+      setappdata(this.hMainGui, name, handle);                   
+                           
+      movegui(this.hMainGui,'center'); 
+      
+    end
     
     end
   
-    methods(Static)
+  methods(Static)
       
-      function hFunction = createCallback(type, name, packageName)
+    function hFunction = createCallback(type, name, packageName)
         
         % check if framework is inside a package
         if isempty(packageName)
@@ -239,7 +276,7 @@ classdef framework < handle
         
       end
       
-    end
+  end
   
   
 end

@@ -1,5 +1,5 @@
 %% Intitialize Graphical User Interface
 
-  framework('example.cfg');
+  this = framework('example.cfg');
 
  
