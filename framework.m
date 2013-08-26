@@ -34,7 +34,7 @@ classdef framework < handle
       this.showGui();
       
       % restore warning settings
-      %warning(s);
+      warning(s);
                                                    
     end
     
@@ -134,6 +134,25 @@ classdef framework < handle
       end
       
 
+    end
+    
+    function panel(this, name, string, size, position, parent)
+      
+      % check input arguments
+      if nargin < 6
+        parent = this.hMainGui;
+      else
+        parent = getappdata(this.hMainGui,parent);
+      end
+      
+      handle = uipanel('Title',string, ...
+                       'Parent',parent, ...
+                       'Units', 'pixel', ...
+                       'FontSize',12, ...
+                       'Position',[position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size]);
+      
+      setappdata(this.hMainGui, name, handle);
+      
     end
     
     function tab(this, name, string, parent)
