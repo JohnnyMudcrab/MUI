@@ -90,7 +90,7 @@ classdef framework < handle
         parent = getappdata(this.hMainGui,parent);
       end
       
-      hFunction = this.createCallback('button', name, this.packageName);
+      hFunction = this.createCallback(name, this.packageName);
       
       % create button
       handle = uicontrol('Style', 'pushbutton',...
