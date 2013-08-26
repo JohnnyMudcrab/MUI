@@ -1,5 +1,10 @@
 %% Intitialize Graphical User Interface
 
+  % clean up
+  clear
+  clc
+  close all
+
   this = framework('example.cfg');
 
   % get handle from axes a1

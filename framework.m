@@ -104,7 +104,7 @@ classdef framework < handle
       
     end
     
-    function parseConfig(this, config)
+    function parseConfig(this, config) %#ok<INUSL>
       
       % check if config file exsists 
       if exist(config, 'file') == 2
