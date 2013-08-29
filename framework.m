@@ -74,8 +74,6 @@ classdef framework < handle
       handle = axes('Units', 'pixel', ...
                     'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size],...
                     'Parent', parent);
-                  
-      imshow(1);
          
       setappdata(this.hMainGui, name, handle);
       
