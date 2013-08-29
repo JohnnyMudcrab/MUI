@@ -2,7 +2,7 @@ classdef framework < handle
    
   properties
     
-    hMainGui;
+    hMainWindow;
     packageName;
 
   end
@@ -39,7 +39,7 @@ classdef framework < handle
     end
     
     function handle = getHandle(this, name)
-      handle = getappdata(this.hMainGui, name);
+      handle = getappdata(this.hMainWindow, name);
     end
     
     function text = getText(this, name, format)
@@ -65,9 +65,9 @@ classdef framework < handle
     function axes(this, name, size, position, parent)
      
       if nargin < 5
-        parent = this.hMainGui;
+        parent = this.hMainWindow;
       else
-        parent = getappdata(this.hMainGui,parent);
+        parent = getappdata(this.hMainWindow,parent);
       end
       
       % create button
@@ -75,7 +75,7 @@ classdef framework < handle
                     'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size],...
                     'Parent', parent);
          
-      setappdata(this.hMainGui, name, handle);
+      setappdata(this.hMainWindow, name, handle);
       
     end
     
@@ -83,9 +83,9 @@ classdef framework < handle
       
       % check input arguments
       if nargin < 6
-        parent = this.hMainGui;
+        parent = this.hMainWindow;
       else
-        parent = getappdata(this.hMainGui,parent);
+        parent = getappdata(this.hMainWindow,parent);
       end
       
       hFunction = this.createCallback(name, this.packageName);
@@ -98,7 +98,7 @@ classdef framework < handle
                          'Callback', @(src,event)hFunction(this), ...
                          'Parent', parent);
                        
-      setappdata(this.hMainGui, name, handle);
+      setappdata(this.hMainWindow, name, handle);
       
     end
     
@@ -138,9 +138,9 @@ classdef framework < handle
       
       % check input arguments
       if nargin < 6
-        parent = this.hMainGui;
+        parent = this.hMainWindow;
       else
-        parent = getappdata(this.hMainGui,parent);
+        parent = getappdata(this.hMainWindow,parent);
       end
       
       handle = uipanel('Title',string, ...
@@ -149,7 +149,7 @@ classdef framework < handle
                        'FontSize',12, ...
                        'Position',[position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size]);
       
-      setappdata(this.hMainGui, name, handle);
+      setappdata(this.hMainWindow, name, handle);
       
     end
     
@@ -158,21 +158,21 @@ classdef framework < handle
       tabGroupName = [parent 'TabGroup'];
       
       if nargin < 4
-        parent = this.hMainGui;
+        parent = this.hMainWindow;
       else
-        parent = getappdata(this.hMainGui,parent);
+        parent = getappdata(this.hMainWindow,parent);
       end
       
-      hTabGroup = getappdata(this.hMainGui, tabGroupName);
+      hTabGroup = getappdata(this.hMainWindow, tabGroupName);
       
       if isempty(hTabGroup)
         hTabGroup = uitabgroup('Parent',parent);
-        setappdata(this.hMainGui, tabGroupName, hTabGroup);
+        setappdata(this.hMainWindow, tabGroupName, hTabGroup);
       end
       
       handle = uitab('Parent',hTabGroup, 'title',string ,'Units','pixel');
       
-      setappdata(this.hMainGui, name, handle);
+      setappdata(this.hMainWindow, name, handle);
       
     end
     
@@ -180,9 +180,9 @@ classdef framework < handle
       
       % check input arguments
       if nargin < 6
-        parent = this.hMainGui;
+        parent = this.hMainWindow;
       else
-        parent = getappdata(this.hMainGui,parent);
+        parent = getappdata(this.hMainWindow,parent);
       end
       
       if strcmp(style, 'static')
@@ -195,12 +195,12 @@ classdef framework < handle
                          'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
                          'Parent', parent);
       
-      setappdata(this.hMainGui, name, handle);
+      setappdata(this.hMainWindow, name, handle);
                        
     end
     
     function showGui(this)
-      set(this.hMainGui,'Visible','on');
+      set(this.hMainWindow,'Visible','on');
     end
     
     function window(this, name, size, string)
@@ -214,13 +214,13 @@ classdef framework < handle
                              'Units','pixel',...
                              'position',[50, 50, size]);
             
-      if isempty(this.hMainGui)
-        this.hMainGui = handle;
+      if isempty(this.hMainWindow)
+        this.hMainWindow = handle;
       end
                            
-      setappdata(this.hMainGui, name, handle);                   
+      setappdata(this.hMainWindow, name, handle);                   
                            
-      movegui(this.hMainGui,'center'); 
+      movegui(this.hMainWindow,'center'); 
       
     end
     
