@@ -10,7 +10,7 @@ classdef framework < handle
   
   methods(Access = public)
 
-    function this = framework(config, packageName)
+    function this = framework(config, init, packageName)
       
       % surpress uitabgroup warning
       s = warning('off', 'MATLAB:uitabgroup:OldVersion');
@@ -21,6 +21,10 @@ classdef framework < handle
       end
       
       if nargin < 2
+        init = '';
+      end
+      
+      if nargin < 3
         packageName = '';
       end
       
@@ -29,6 +33,9 @@ classdef framework < handle
       
       % parse config file      
       this.parseConfig(config);
+      
+      % init
+      eval([init '(this)']);
       
       % show gui
       this.showGui();
@@ -98,6 +105,26 @@ classdef framework < handle
                          'Callback', @(src,event)hFunction(this), ...
                          'Parent', parent);
                        
+      setappdata(this.hMainWindow, name, handle);
+      
+    end
+    
+    function menu(this, name, string, callback, parent)
+      
+      % check input arguments
+      if nargin < 5
+        parent = this.hMainWindow;
+      else
+        parent = getappdata(this.hMainWindow,parent);
+      end
+      
+      if callback
+        hFunction = this.createCallback(name, this.packageName);
+        handle = uimenu(parent, 'Label',string, 'Callback', @(src,event)hFunction(this));
+      else
+        handle = uimenu(parent, 'Label',string);
+      end
+      
       setappdata(this.hMainWindow, name, handle);
       
     end
@@ -207,11 +234,12 @@ classdef framework < handle
       
       handle = figure('tag',name,...
                              'NumberTitle','off', ...
-                             'Visible','off',...
-                             'Name', string,...
-                             'MenuBar','none',...
-                             'Resize','off',...
-                             'Units','pixel',...
+                             'Visible','off', ...
+                             'Name', string, ...
+                             'MenuBar','none', ...
+                             'Resize','off', ...
+                             'Units','pixel', ...
+                             'DockControls','off', ...
                              'position',[50, 50, size]);
             
       if isempty(this.hMainWindow)
