@@ -10,7 +10,7 @@ classdef framework < handle
   
   methods(Access = public)
 
-    function this = framework(config, init, packageName)
+    function this = framework(config, packageName)
       
       % surpress uitabgroup warning
       s = warning('off', 'MATLAB:uitabgroup:OldVersion');
@@ -21,10 +21,6 @@ classdef framework < handle
       end
       
       if nargin < 2
-        init = '';
-      end
-      
-      if nargin < 3
         packageName = '';
       end
       
@@ -33,12 +29,6 @@ classdef framework < handle
       
       % parse config file      
       this.parseConfig(config);
-      
-      % init
-      eval([init '(this)']);
-      
-      % show gui
-      this.showGui();
       
       % restore warning settings
       warning(s);
@@ -63,6 +53,10 @@ classdef framework < handle
         text = get(handle,'String');
       end
  
+    end
+    
+    function showGui(this)
+      set(this.hMainWindow,'Visible','on');
     end
     
   end
@@ -224,10 +218,6 @@ classdef framework < handle
       
       setappdata(this.hMainWindow, name, handle);
                        
-    end
-    
-    function showGui(this)
-      set(this.hMainWindow,'Visible','on');
     end
     
     function window(this, name, size, string)
