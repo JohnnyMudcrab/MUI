@@ -63,18 +63,31 @@ classdef framework < handle
   
   methods(Access = private)
     
-    function axes(this, name, size, position, parent)
+    function axes(this, name, size, position, buttonDownFcn, parent)
      
-      if nargin < 5
+      if nargin < 6
         parent = this.hMainWindow;
       else
         parent = getappdata(this.hMainWindow,parent);
       end
       
-      % create button
-      handle = axes('Units', 'pixel', ...
-                    'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size],...
-                    'Parent', parent);
+      if buttonDownFcn
+        
+        hFunction = this.createCallback(name, this.packageName);
+        
+        handle = axes('Units', 'pixel', ...
+                      'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size],...
+                      'Parent', parent, 'ButtonDownFcn', @(src,event)hFunction(this));
+        
+      else
+        
+        handle = axes('Units', 'pixel', ...
+                      'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size],...
+                      'Parent', parent);
+        
+      end
+      
+      
          
       setappdata(this.hMainWindow, name, handle);
       
