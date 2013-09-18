@@ -5,7 +5,7 @@
   clc
   close all
 
-  this = framework('example.cfg');
+  this = framework('example.cfg','gui');
 
   % get handle from axes a1
   hAxes = this.getHandle('a1');
