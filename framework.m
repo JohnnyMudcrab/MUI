@@ -14,7 +14,8 @@ classdef framework < handle
     function this = framework(config, packageName)
     %FRAMEWORK initiate the GUI and parse the config file
     %  arguments: - config: name of the configuration file (string)
-    %             - packageName: the name for the preconfigured gui (string)
+    %             - packageName: the name for the preconfigured gui, '' 
+    %               for placing the callbacks in the main dir (string)
       
       % surpress uitabgroup warning
       s = warning('off', 'MATLAB:uitabgroup:OldVersion');
@@ -29,36 +30,71 @@ classdef framework < handle
       warning(s);
                                                    
     end
-    
+ 
     function hFunction = createCallback(this, name)
     %CREATECALLBACK create a callback
     %  arguments: - name: name of the callback
-    
-      % check if callback dir exists
-      if ~(exist(['+' this.packageName '/+callbacks'],'dir') == 7)
+        
+      % check if framework is inside a package
+      if isempty(this.packageName)
 
-        % if not create it
-        mkdir(['+' this.packageName '/+callbacks'])
+        % check if callback dir exists
+        if ~(exist('+callbacks','dir') == 7)
 
-      end
+          % if not create it
+          mkdir('+callbacks')
 
-      % create dummy callback function if non exists yet
-      if ~(exist(['+' this.packageName '/+callbacks/', name, '.m'],'file') == 2)
-        fcallback = fopen(['+' this.packageName '/+callbacks/', name, '.m'],'w');
-        fprintf(fcallback, '%s\n', ['function ', name, '(this)']);
-        fprintf(fcallback, '%s\n', ['  msgbox(''', name, ''',''Callback Test'',''help'');']);
-        fprintf(fcallback, '%s\n\n', 'end');
-        fclose(fcallback); 
-
-        % wait until file is written
-        while(~exist(['+' this.packageName '/+callbacks/', name, '.m'],'file'))
-          pause(0.1)
         end
 
-      end
+        % create dummy callback function if non exists yet
+        if ~(exist(['+callbacks/', name, '.m'],'file') == 2)
+          fcallback = fopen(['+callbacks/', name, '.m'],'w');
+          fprintf(fcallback, '%s\n', ['function ', name, '(this)']);
+          fprintf(fcallback, '%s\n', ['  msgbox(''', name, ''',''Callback Test'',''help'');']);
+          fprintf(fcallback, '%s\n\n', 'end');
+          fclose(fcallback); 
 
-      % create callback function
-      hFunction = str2func([this.packageName '.callbacks.', name]);
+          % wait until file is written
+          while(~exist(['+callbacks/', name, '.m'],'file'))
+            pause(0.1)
+          end
+
+        end
+
+        % create callback function
+        hFunction = str2func(['callbacks.', name]);
+
+      else
+
+        % check if callback dir exists
+        if ~(exist(['+' this.packageName '/+callbacks'],'dir') == 7)
+
+          % if not create it
+          mkdir(['+' this.packageName '/+callbacks'])
+
+        end
+
+        % create dummy callback function if non exists yet
+        if ~(exist(['+' this.packageName '/+callbacks/', name, '.m'],'file') == 2)
+          fcallback = fopen(['+' this.packageName '/+callbacks/', name, '.m'],'w');
+          fprintf(fcallback, '%s\n', ['function ', name, '(this)']);
+          fprintf(fcallback, '%s\n', ['  msgbox(''', name, ''',''Callback Test'',''help'');']);
+          fprintf(fcallback, '%s\n\n', 'end');
+          fclose(fcallback); 
+
+          % wait until file is written
+          while(~exist(['+' this.packageName '/+callbacks/', name, '.m'],'file'))
+            pause(0.1)
+          end
+
+        end
+
+        % create callback function
+        hFunction = str2func([this.packageName '.callbacks.', name]);
+
+
+
+      end
 
     end
     
