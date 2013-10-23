@@ -166,13 +166,14 @@ classdef framework < handle
       
     end
     
-    function button(this, name, size, position, string, parent)
+    function button(this, name, size, position, style, string, parent)
     %BUTTON config object for a button
     %  arguments: - name: name of the button
     %             - size: 2 dimensional vector with the wide and hight of
     %             the button
     %             - position: 2 dimensional vector with the position of
     %             the button 
+    %             - style:  toggle or push
     %             - string: label for the button
     %             - parent: the parent object of the button
       
@@ -180,8 +181,14 @@ classdef framework < handle
       
       hFunction = this.createCallback(name);
       
+      if strcmp(style, 'toggle')
+        style = 'togglebutton';
+      else
+        style = 'pushbutton';
+      end
+      
       % create button
-      handle = uicontrol('Style', 'pushbutton',...
+      handle = uicontrol('Style', style,...
                          'String', string, ...
                          'Units', 'pixel', ...
                          'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
