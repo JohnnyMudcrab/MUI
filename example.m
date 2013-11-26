@@ -1,7 +1,8 @@
 %% Intitialize Graphical User Interface
 
   % clean up
-  clear
+  clear all
+  clear classes
   clc
   close all
 
@@ -24,7 +25,7 @@
   hGui = getappdata(0,'hGui');
   
   % get handle from static text s1
-  hS1 = hGui.getHandle('s1');
+  hS1 = hGui.getHandle('st1');
   
   % manipulate posititon and text of static text s1
   set(hS1,'String','this text has been changed','Position',[300 300 80 50]);

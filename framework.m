@@ -274,6 +274,36 @@ classdef framework < handle
       
     end
     
+    function slider(this, name, size, position, minValue, maxValue, step, parent)
+    %SLIDER config object for a button
+    %  arguments: - name: name of the button
+    %             - size: 2 dimensional vector with the wide and hight of
+    %                     the slider
+    %             - position: 2 dimensional vector with the position of
+    %                         the slider 
+    %             - minValue: minimal feasiable value
+    %             - maxValue: maximal feasiable value
+    %             - step: increment steo
+    %             - parent: the parent object of the slider
+      
+      parent = getappdata(this.hMainWindow,parent);
+      
+      hFunction = this.createCallback(name);
+      
+      sliderStep = step / (maxValue - minValue); % calculate slider step 
+      
+      % create slider
+      handle = uicontrol('Style', 'slider',...
+                         'Units', 'pixel', ...
+                         'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
+                         'Min', minValue, 'Max', maxValue, ...
+                         'SliderStep', sliderStep, 'Value', minValue, ...
+                         'Callback', @(src,event)hFunction(this), ...
+                         'Parent', parent);
+                       
+      setappdata(this.hMainWindow, name, handle);     
+    end
+    
     function tab(this, name, string, parent)
     %TAP config object for a tap
     %  arguments: - name: name of the tap
