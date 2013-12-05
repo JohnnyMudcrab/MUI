@@ -11,6 +11,7 @@ classdef framework < handle
   
   methods(Access = public)
 
+    % constructor
     function this = framework(config, packageName)
     %FRAMEWORK initiate the GUI and parse the config file
     %  arguments: - config: name of the configuration file (string)
@@ -30,74 +31,52 @@ classdef framework < handle
       warning(s);
                                                    
     end
- 
-    function hFunction = createCallback(this, name)
-    %CREATECALLBACK create a callback
-    %  arguments: - name: name of the callback
-        
-      % check if framework is inside a package
-      if isempty(this.packageName)
 
-        % check if callback dir exists
-        if ~(exist('+callbacks','dir') == 7)
-
-          % if not create it
-          mkdir('+callbacks')
-
-        end
-
-        % create dummy callback function if non exists yet
-        if ~(exist(['+callbacks/', name, '.m'],'file') == 2)
-          fcallback = fopen(['+callbacks/', name, '.m'],'w');
-          fprintf(fcallback, '%s\n', ['function ', name, '(this)']);
-          fprintf(fcallback, '%s\n', ['  msgbox(''', name, ''',''Callback Test'',''help'');']);
-          fprintf(fcallback, '%s\n\n', 'end');
-          fclose(fcallback); 
-
-          % wait until file is written
-          while(~exist(['+callbacks/', name, '.m'],'file'))
-            pause(0.1)
-          end
-
-        end
-
-        % create callback function
-        hFunction = str2func(['callbacks.', name]);
-
-      else
-
-        % check if callback dir exists
-        if ~(exist(['+' this.packageName '/+callbacks'],'dir') == 7)
-
-          % if not create it
-          mkdir(['+' this.packageName '/+callbacks'])
-
-        end
-
-        % create dummy callback function if non exists yet
-        if ~(exist(['+' this.packageName '/+callbacks/', name, '.m'],'file') == 2)
-          fcallback = fopen(['+' this.packageName '/+callbacks/', name, '.m'],'w');
-          fprintf(fcallback, '%s\n', ['function ', name, '(this)']);
-          fprintf(fcallback, '%s\n', ['  msgbox(''', name, ''',''Callback Test'',''help'');']);
-          fprintf(fcallback, '%s\n\n', 'end');
-          fclose(fcallback); 
-
-          % wait until file is written
-          while(~exist(['+' this.packageName '/+callbacks/', name, '.m'],'file'))
-            pause(0.1)
-          end
-
-        end
-
-        % create callback function
-        hFunction = str2func([this.packageName '.callbacks.', name]);
-
-
-
-      end
-
+    
+    % statusbar
+    function changeStatus(this, name, string)
+      
+      handle = this.getHandle(name);
+      set(handle, 'Text', string)
+      
     end
     
+    
+    % tree
+    function updateTree(this, name, file, path, data)
+      
+      % get handle
+      tree = this.getHandle(name);
+      
+      % init
+      newPath = 1;
+      newFile = 1;
+
+      % create pathObject
+      pathObject = uitreenode('v0',handle(tree.handle),path,[],false); 
+
+      % check for existens of pathObject
+      if tree.root(1).getChildCount
+        tempObject = root(1).getFirstChild;
+      else
+        tempObject = [];
+      end
+      
+      % loop over node to determine if pathObject already exists
+      while(~isempty(tempObject))
+        if strcmp(tempObject.getName,pathObject.getName)
+          pathObject = tempObject;
+          newPath = 0;
+          tempObject = [];
+        else
+          tempObject = root(1).getChildAfter(tempObject);
+        end
+      end
+      
+    end
+    
+    
+    % getter
     function handle = getHandle(this, name)
     %GETHANDLE return the handle of a childobject of the the gui object
     %  arguments: - name: name of the gui object
@@ -119,6 +98,14 @@ classdef framework < handle
         text = get(handle,'String');
       end
  
+    end
+    
+    
+    % gui visibility
+    function hideGui(this)
+      
+      set(this.hMainWindow,'Visible','off');
+      
     end
     
     function showGui(this)
@@ -197,6 +184,73 @@ classdef framework < handle
                        
       setappdata(this.hMainWindow, name, handle);
       
+    end
+    
+    function hFunction = createCallback(this, name)
+    %CREATECALLBACK create a callback
+    %  arguments: - name: name of the callback
+        
+      % check if framework is inside a package
+      if isempty(this.packageName)
+
+        % check if callback dir exists
+        if ~(exist('+callbacks','dir') == 7)
+
+          % if not create it
+          mkdir('+callbacks')
+
+        end
+
+        % create dummy callback function if non exists yet
+        if ~(exist(['+callbacks/', name, '.m'],'file') == 2)
+          fcallback = fopen(['+callbacks/', name, '.m'],'w');
+          fprintf(fcallback, '%s\n', ['function ', name, '(this)']);
+          fprintf(fcallback, '%s\n', ['  msgbox(''', name, ''',''Callback Test'',''help'');']);
+          fprintf(fcallback, '%s\n\n', 'end');
+          fclose(fcallback); 
+
+          % wait until file is written
+          while(~exist(['+callbacks/', name, '.m'],'file'))
+            pause(0.1)
+          end
+
+        end
+
+        % create callback function
+        hFunction = str2func(['callbacks.', name]);
+
+      else
+
+        % check if callback dir exists
+        if ~(exist(['+' this.packageName '/+callbacks'],'dir') == 7)
+
+          % if not create it
+          mkdir(['+' this.packageName '/+callbacks'])
+
+        end
+
+        % create dummy callback function if non exists yet
+        if ~(exist(['+' this.packageName '/+callbacks/', name, '.m'],'file') == 2)
+          fcallback = fopen(['+' this.packageName '/+callbacks/', name, '.m'],'w');
+          fprintf(fcallback, '%s\n', ['function ', name, '(this)']);
+          fprintf(fcallback, '%s\n', ['  msgbox(''', name, ''',''Callback Test'',''help'');']);
+          fprintf(fcallback, '%s\n\n', 'end');
+          fclose(fcallback); 
+
+          % wait until file is written
+          while(~exist(['+' this.packageName '/+callbacks/', name, '.m'],'file'))
+            pause(0.1)
+          end
+
+        end
+
+        % create callback function
+        hFunction = str2func([this.packageName '.callbacks.', name]);
+
+
+
+      end
+
     end
     
     function menu(this, name, string, callback, parent)
@@ -304,6 +358,17 @@ classdef framework < handle
       setappdata(this.hMainWindow, name, handle);     
     end
     
+    function status(this, name, string, parent)
+      
+      parent = getappdata(this.hMainWindow,parent);
+      
+      this.showGui();
+      handle = this.statusbar(parent, string);
+      
+      setappdata(this.hMainWindow, name, handle); 
+      
+    end
+    
     function tab(this, name, string, parent)
     %TAP config object for a tap
     %  arguments: - name: name of the tap
@@ -355,6 +420,20 @@ classdef framework < handle
                        
     end
     
+    function tree(this, name, string, multipleSelection, parent)
+      
+      parent = getappdata(this.hMainWindow,parent);
+      
+      handle = gui.tree(string, parent);
+      
+      if multipleSelection
+        handle.enableMultipleSelection();
+      end
+
+      setappdata(this.hMainWindow, name, handle);
+
+    end
+    
     function window(this, name, size, string)
     %WINDOW config object for a gui window
     %  arguments: - name: name of the window
@@ -382,9 +461,12 @@ classdef framework < handle
       
     end
   
-    
-      
   end
   
-  
+  methods(Static)
+    
+    statusbarHandles = statusbar(varargin);
+    
+  end
+        
 end
