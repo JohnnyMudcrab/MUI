@@ -5,6 +5,8 @@ classdef framework < handle
     
     hMainWindow;
     packageName;
+    handles;
+    state;
 
   end
   
@@ -20,6 +22,10 @@ classdef framework < handle
       
       % surpress uitabgroup warning
       s = warning('off', 'MATLAB:uitabgroup:OldVersion');
+      
+      % initialize handles and state
+      this.handles = {};
+      this.state = [];
       
       % set package name
       this.packageName = packageName;
@@ -38,6 +44,36 @@ classdef framework < handle
       
       handle = this.getHandle(name);
       set(handle, 'Text', string)
+      
+    end
+    
+    function disableGui(this)
+      
+      n = numel(this.handles);
+      
+      this.state = cell(n,1);
+      
+      for i = 1:n
+        
+        h = this.getHandle(this.handles{i});
+        this.state{i} = get(h, 'Enable');
+        set(h,'Enable','off');
+        
+      end
+      
+      
+    end
+    
+    function enableGui(this)
+      
+      n = numel(this.handles);
+      
+      for i = 1:n
+        
+        h = this.getHandle(this.handles{i});
+        set(h,'Enable',this.state{i});
+        
+      end
       
     end
     
@@ -90,6 +126,10 @@ classdef framework < handle
     %             - format: 'numeric' fot returning a number, every other
     %                       value for returning a string
       
+      if nargin < 3
+        format = 'string';
+      end
+    
       handle = this.getHandle(name);
       
       if strcmp(format,'numeric')
@@ -98,6 +138,13 @@ classdef framework < handle
         text = get(handle,'String');
       end
  
+    end
+    
+    function value = getValue(this, name)
+      
+      handle = this.getHandle(name);
+      value = get(handle, 'Value');
+      
     end
     
     
@@ -147,9 +194,10 @@ classdef framework < handle
         
       end
       
-      
+      %imshow(1)
          
       setappdata(this.hMainWindow, name, handle);
+      %this.handles{numel(this.handles) + 1} = name;
       
     end
     
@@ -164,7 +212,7 @@ classdef framework < handle
     %             - string: label for the button
     %             - parent: the parent object of the button
       
-        parent = getappdata(this.hMainWindow,parent);
+      parent = getappdata(this.hMainWindow,parent);
       
       hFunction = this.createCallback(name);
       
@@ -183,6 +231,27 @@ classdef framework < handle
                          'Parent', parent);
                        
       setappdata(this.hMainWindow, name, handle);
+      this.handles{numel(this.handles) + 1} = name;
+      
+    end
+    
+    function checkbox(this, name, size, position, string, value, parent)
+      
+      parent = getappdata(this.hMainWindow,parent);
+      
+      %hFunction = this.createCallback(name);
+
+      
+      % create button
+      handle = uicontrol('Style', 'checkbox',...
+                         'String', string, ...
+                         'Units', 'pixel', ...
+                         'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
+                         'Value', value, ...
+                         'Parent', parent);
+                       
+      setappdata(this.hMainWindow, name, handle);
+      %this.handles{numel(this.handles) + 1} = name;
       
     end
     
@@ -253,6 +322,32 @@ classdef framework < handle
 
     end
     
+    function list(this, name, size, position, callback, parent)
+      
+      parent = getappdata(this.hMainWindow,parent);
+      
+      if callback
+        hFunction = this.createCallback(name);
+        
+        handle = uicontrol('Style', 'listbox',...
+                           'Units', 'pixel', ...
+                           'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
+                           'Callback', @(src,event)hFunction(this), ...
+                           'Parent', parent);
+      else
+
+        
+        handle = uicontrol('Style', 'listbox',...
+                           'Units', 'pixel', ...
+                           'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
+                           'Parent', parent);
+                       
+      end
+                       
+      setappdata(this.hMainWindow, name, handle);  
+      
+    end
+    
     function menu(this, name, string, callback, parent)
     %MENU config object for a dropdown menu
     %  arguments: - name: name of the menu
@@ -269,6 +364,7 @@ classdef framework < handle
       end
       
       setappdata(this.hMainWindow, name, handle);
+      this.handles{numel(this.handles) + 1} = name;
       
     end
     
@@ -325,6 +421,7 @@ classdef framework < handle
                        'Position',[position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size]);
       
       setappdata(this.hMainWindow, name, handle);
+      %this.handles{numel(this.handles) + 1} = name;
       
     end
     
@@ -355,7 +452,8 @@ classdef framework < handle
                          'Callback', @(src,event)hFunction(this), ...
                          'Parent', parent);
                        
-      setappdata(this.hMainWindow, name, handle);     
+      setappdata(this.hMainWindow, name, handle);  
+      this.handles{numel(this.handles) + 1} = name;
     end
     
     function status(this, name, string, parent)
@@ -366,6 +464,7 @@ classdef framework < handle
       handle = this.statusbar(parent, string);
       
       setappdata(this.hMainWindow, name, handle); 
+      %this.handles{numel(this.handles) + 1} = name;
       
     end
     
@@ -388,6 +487,7 @@ classdef framework < handle
       handle = uitab('Parent',hTabGroup, 'title',string ,'Units','pixel');
       
       setappdata(this.hMainWindow, name, handle);
+      %this.handles{numel(this.handles) + 1} = name;
       
     end
     
@@ -417,6 +517,7 @@ classdef framework < handle
                          'Parent', parent);
       
       setappdata(this.hMainWindow, name, handle);
+      %this.handles{numel(this.handles) + 1} = name;
                        
     end
     
@@ -431,6 +532,7 @@ classdef framework < handle
       end
 
       setappdata(this.hMainWindow, name, handle);
+      %this.handles{numel(this.handles) + 1} = name;
 
     end
     
@@ -455,7 +557,8 @@ classdef framework < handle
         this.hMainWindow = handle;
       end
                            
-      setappdata(this.hMainWindow, name, handle);                   
+      setappdata(this.hMainWindow, name, handle);     
+      %this.handles{numel(this.handles) + 1} = name;
                            
       movegui(this.hMainWindow,'center'); 
       
