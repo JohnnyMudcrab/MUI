@@ -306,6 +306,7 @@ classdef framework < handle
       
     end
     
+
     function checkbox(this, name, size, position, string, value, parent)
       
       parent = getappdata(this.hMainWindow,parent);
@@ -354,6 +355,7 @@ classdef framework < handle
       
     end
     
+
     function menu(this, name, string, callback, parent)
     %MENU config object for a dropdown menu
     %  arguments: - name: name of the menu
