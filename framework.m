@@ -1,7 +1,7 @@
 classdef framework < handle
   %framework Provide a class for a easy configurable gui 
   %
-  properties
+  properties(Access = public)
     
     hMainWindow;
     packageName;
