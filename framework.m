@@ -308,6 +308,18 @@ classdef framework < handle
       
     end
     
+    function buttongroup(this, name, size, position, parent)
+      
+      parent = getappdata(this.hMainWindow,parent);
+
+      % create buttongroup
+      handle = uibuttongroup('Units', 'pixel', ...
+                             'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
+                             'Parent', parent);
+                       
+      setappdata(this.hMainWindow, name, handle);      
+    end
+    
 
     function checkbox(this, name, size, position, string, value, parent)
       
@@ -430,6 +442,26 @@ classdef framework < handle
                        'FontSize',12, ...
                        'Position',[position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size]);
       
+      setappdata(this.hMainWindow, name, handle);
+      %this.handles{numel(this.handles) + 1} = name;
+      
+    end
+    
+    function radiobutton(this, name, size, position, string, value, parent)
+      
+      parent = getappdata(this.hMainWindow,parent);
+      
+      %hFunction = this.createCallback(name);
+
+      
+      % create button
+      handle = uicontrol('Style', 'radiobutton',...
+                         'String', string, ...
+                         'Units', 'pixel', ...
+                         'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
+                         'Value', value, ...
+                         'Parent', parent);
+                       
       setappdata(this.hMainWindow, name, handle);
       %this.handles{numel(this.handles) + 1} = name;
       
