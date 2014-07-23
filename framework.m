@@ -4,6 +4,7 @@ classdef framework < handle
   properties(Access = public)
     
     hMainWindow;
+    hParent;
     packageName;
     handles;
     state;
@@ -14,7 +15,7 @@ classdef framework < handle
   methods(Access = public)
 
     % constructor
-    function this = framework(config, packageName)
+    function this = framework(config, packageName, hParent)
     %FRAMEWORK initiate the GUI and parse the config file
     %  arguments: - config: name of the configuration file (string)
     %             - packageName: the name for the preconfigured gui, '' 
@@ -34,6 +35,7 @@ classdef framework < handle
       this.parseConfig(config);
       
       % this.hideGui();
+      this.hParent = hParent;
       
       % restore warning settings
       warning(s);
@@ -255,7 +257,7 @@ classdef framework < handle
         
         handle = axes('Units', 'pixel', ...
                       'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size],...
-                      'Parent', parent, 'ButtonDownFcn', @(src,event)hFunction(this));
+                      'Parent', parent, 'ButtonDownFcn', @(src,event)hFunction(this.hParent));
         
       else
         
@@ -298,7 +300,7 @@ classdef framework < handle
                          'String', string, ...
                          'Units', 'pixel', ...
                          'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
-                         'Callback', @(src,event)hFunction(this), ...
+                         'Callback', @(src,event)hFunction(this.hParent), ...
                          'Parent', parent);
                        
       setappdata(this.hMainWindow, name, handle);
@@ -339,7 +341,7 @@ classdef framework < handle
         handle = uicontrol('Style', 'listbox',...
                            'Units', 'pixel', ...
                            'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
-                           'Callback', @(src,event)hFunction(this), ...
+                           'Callback', @(src,event)hFunction(this.hParent), ...
                            'Parent', parent);
       else
 
@@ -366,7 +368,7 @@ classdef framework < handle
       
       if callback
         hFunction = this.createCallback(name);
-        handle = uimenu(parent, 'Label',string, 'Callback', @(src,event)hFunction(this));
+        handle = uimenu(parent, 'Label',string, 'Callback', @(src,event)hFunction(this.hParent));
       else
         handle = uimenu(parent, 'Label',string);
       end
@@ -457,7 +459,7 @@ classdef framework < handle
                          'Position', [position(1) - 0.5 * size(1), position(2) - 0.5 * size(2), size], ...
                          'Min', minValue, 'Max', maxValue, ...
                          'SliderStep', sliderStep, 'Value', minValue, ...
-                         'Callback', @(src,event)hFunction(this), ...
+                         'Callback', @(src,event)hFunction(this.hParent), ...
                          'Parent', parent);
                        
       setappdata(this.hMainWindow, name, handle);  
