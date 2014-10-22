@@ -144,6 +144,13 @@ classdef framework < handle
  
     end
     
+    function setText(this, name, string)
+
+      handle = this.getHandle(name);
+      set(handle, 'String', string);
+ 
+    end
+    
     function value = getValue(this, name)
       
       handle = this.getHandle(name);
